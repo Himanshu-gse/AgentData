@@ -1,8 +1,20 @@
+// Import Express.js
 const express = require('express');
+
+// Create an Express app
 const app = express();
 
 // Middleware to parse JSON bodies
 app.use(express.json());
+
+// Middleware to handle invalid JSON errors
+app.use((err, req, res, next) => {
+  if (err instanceof SyntaxError && err.status === 400 && 'body' in err) {
+    console.error('Invalid JSON:', err.message);
+    return res.status(400).send({ error: 'Invalid JSON' });
+  }
+  next();
+});
 
 // Set port and verify_token
 const port = process.env.PORT || 3000;
@@ -19,9 +31,6 @@ app.get('/', (req, res) => {
     res.status(403).end();
   }
 });
-app.get('/check', (req, res) => {
-  res.status(200).send("Hello World!");
-});
 
 // Route for POST requests (webhook data)
 app.post('/', (req, res) => {
@@ -29,6 +38,11 @@ app.post('/', (req, res) => {
   console.log(`\n\nWebhook received ${timestamp}\n`);
   console.log(JSON.stringify(req.body, null, 2));
   res.status(200).end();
+});
+
+// Simple check route
+app.get('/check', (req, res) => {
+  res.status(200).send('Hello World!');
 });
 
 // Start the server
