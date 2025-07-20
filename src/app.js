@@ -19,6 +19,9 @@ app.get('/', (req, res) => {
     res.status(403).end();
   }
 });
+app.get('/check', (req, res) => {
+  res.status(200).send("Hello World!");
+});
 
 // Route for POST requests (webhook data)
 app.post('/', (req, res) => {
